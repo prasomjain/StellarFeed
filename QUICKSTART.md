@@ -1,8 +1,8 @@
-# Roku Metadata Engine - Quick Start Guide
+# StellarFeed - Quick Start Guide
 
 ## ✅ Project Status: COMPLETE
 
-All 19 files have been successfully created for the Roku-Optimized Content Discovery & Metadata Engine.
+All 19 files have been successfully created for the StellarFeed Video Streaming Metadata API.
 
 ## 📊 Project Statistics
 
@@ -20,17 +20,17 @@ f:\java project\
 ├── README.md                                         (Complete documentation)
 │
 ├── src/main/java/com/roku/metadata/
-│   ├── RokuMetadataApplication.java                  (Main entry point)
+│   ├── RokuMetadataApplication.java                  (Main Spring Boot application)
 │   │
 │   ├── config/
 │   │   └── CacheConfiguration.java                   (Redis cache setup)
 │   │
 │   ├── controller/
-│   │   └── RokuFeedController.java                   (REST API endpoints)
+│   │   └── RokuFeedController.java                   (REST API controller)
 │   │
 │   ├── dto/
 │   │   ├── ContentItemDto.java                       (Content response DTO)
-│   │   └── RokuFeedResponse.java                     (Feed response DTO)
+│   │   └── RokuFeedResponse.java                     (API response structure)
 │   │
 │   ├── entity/
 │   │   └── ContentMetadata.java                      (JPA entity)
@@ -49,7 +49,7 @@ f:\java project\
 │   ├── application.yml                               (App configuration)
 │   ├── data.sql                                      (5 sample content items)
 │   └── schemas/
-│       └── roku-feed-schema.json                     (Roku validation schema)
+│       └── roku-feed-schema.json                     (JSON schema validation)
 │
 └── src/test/java/com/roku/metadata/
     ├── controller/
@@ -130,28 +130,28 @@ mvn spring-boot:run
 **Option A: Using curl**
 ```bash
 # Get all content
-curl http://localhost:8080/api/v1/roku/feed
+curl http://localhost:8080/api/v1/feed
 
 # Filter by genre
-curl http://localhost:8080/api/v1/roku/feed?genre=Action
+curl http://localhost:8080/api/v1/feed?genre=Action
 
 # Filter by language
-curl http://localhost:8080/api/v1/roku/feed?language=es
+curl http://localhost:8080/api/v1/feed?language=es
 
 # Health check
-curl http://localhost:8080/api/v1/roku/health
+curl http://localhost:8080/api/v1/health
 ```
 
 **Option B: Using a Web Browser**
 ```
-http://localhost:8080/api/v1/roku/feed
-http://localhost:8080/api/v1/roku/health
+http://localhost:8080/api/v1/feed
+http://localhost:8080/api/v1/health
 ```
 
 **Option C: Using H2 Console**
 ```
 1. Open: http://localhost:8080/h2-console
-2. JDBC URL: jdbc:h2:mem:rokudb
+2. JDBC URL: jdbc:h2:mem:streamdb
 3. Username: sa
 4. Password: (leave empty)
 5. Click "Connect"
@@ -167,10 +167,10 @@ mvn test
 
 ### Expected Test Results
 ```
-[INFO] RokuFeedServiceTest.................... 8 tests ✓
-[INFO] FeedValidationServiceTest.............. 2 tests ✓
-[INFO] ContentMetadataRepositoryTest.......... 8 tests ✓
-[INFO] RokuFeedControllerIntegrationTest...... 7 tests ✓
+[INFO] FeedServiceTest.................... 8 tests ✓
+[INFO] FeedValidationServiceTest.......... 2 tests ✓
+[INFO] ContentMetadataRepositoryTest...... 8 tests ✓
+[INFO] FeedControllerIntegrationTest...... 7 tests ✓
 [INFO] ----------------------------------------
 [INFO] Total: 25+ tests, 0 failures
 [INFO] BUILD SUCCESS
@@ -198,17 +198,17 @@ The application includes 5 pre-populated content items:
 - **Lombok** - Reduce boilerplate code
 - **JUnit 5 + Mockito** - Comprehensive testing
 - **Jackson** - JSON serialization
-- **JSON Schema Validator** - Roku compliance validation
+- **JSON Schema Validator** - Feed structure validation
 
 ## 🎯 API Endpoints Summary
 
 | Endpoint | Method | Description | Example |
 |----------|--------|-------------|---------|
-| `/api/v1/roku/feed` | GET | Get all content | `curl localhost:8080/api/v1/roku/feed` |
-| `/api/v1/roku/feed?genre=Action` | GET | Filter by genre | `curl localhost:8080/api/v1/roku/feed?genre=Action` |
-| `/api/v1/roku/feed?language=es` | GET | Filter by language | `curl localhost:8080/api/v1/roku/feed?language=es` |
-| `/api/v1/roku/feed?genre=Drama&language=en` | GET | Combined filters | Multiple filters |
-| `/api/v1/roku/health` | GET | Health check | `curl localhost:8080/api/v1/roku/health` |
+| `/api/v1/feed` | GET | Get all content | `curl localhost:8080/api/v1/feed` |
+| `/api/v1/feed?genre=Action` | GET | Filter by genre | `curl localhost:8080/api/v1/feed?genre=Action` |
+| `/api/v1/feed?language=es` | GET | Filter by language | `curl localhost:8080/api/v1/feed?language=es` |
+| `/api/v1/feed?genre=Drama&language=en` | GET | Combined filters | Multiple filters |
+| `/api/v1/health` | GET | Health check | `curl localhost:8080/api/v1/health` |
 
 ## 🔍 Verification Checklist
 
@@ -216,7 +216,7 @@ The application includes 5 pre-populated content items:
 ✅ Maven pom.xml with all dependencies  
 ✅ Application.yml properly configured  
 ✅ 5 sample content items in data.sql  
-✅ Roku-compliant JSON schema defined  
+✅ JSON schema validation defined  
 ✅ REST controller with /feed endpoint  
 ✅ Redis caching configured  
 ✅ JPA entities and repositories  
@@ -226,11 +226,11 @@ The application includes 5 pre-populated content items:
 
 ## 📝 Key Features Implemented
 
-### ✅ Roku Compliance
-- Exact field naming per Direct Publisher spec
+### ✅ Streaming Platform Compatibility
+- Standardized JSON feed format
 - Content grouped by mediaType (movies, series, shortFormVideos)
 - ISO 8601 date formats
-- Required metadata fields
+- Complete metadata fields (title, description, thumbnails, streams)
 
 ### ✅ Performance & Scalability
 - Redis caching with 1-hour TTL
@@ -281,7 +281,7 @@ This project demonstrates:
 - ✅ JPA/Hibernate database interactions
 - ✅ RESTful API design best practices
 - ✅ Test-driven development (TDD)
-- ✅ Roku OTT platform integration
+- ✅ Streaming platform integration patterns
 - ✅ Production-grade code quality
 
 ## 📞 Support

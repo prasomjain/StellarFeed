@@ -1,4 +1,4 @@
-# Roku Metadata Engine - Expected Output & Demonstration
+# StellarFeed - Expected Output & Demonstration
 
 ## 📋 Table of Contents
 1. [Build Output (mvn clean install)](#build-output)
@@ -22,25 +22,25 @@ $ mvn clean install
 [INFO] Building Roku Content Metadata Engine 1.0.0
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
-[INFO] --- maven-clean-plugin:3.2.0:clean (default-clean) @ roku-metadata-engine ---
+[INFO] --- maven-clean-plugin:3.2.0:clean (default-clean) @ stellarfeed-api ---
 [INFO] Deleting F:\java project\target
 [INFO] 
-[INFO] --- maven-resources-plugin:3.3.0:resources (default-resources) @ roku-metadata-engine ---
+[INFO] --- maven-resources-plugin:3.3.0:resources (default-resources) @ stellarfeed-api ---
 [INFO] Copying 3 resources
 [INFO] Copying 1 resource
 [INFO] 
-[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ roku-metadata-engine ---
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ stellarfeed-api ---
 [INFO] Changes detected - recompiling the module!
 [INFO] Compiling 10 source files to F:\java project\target\classes
 [INFO] 
-[INFO] --- maven-resources-plugin:3.3.0:testResources (default-testResources) @ roku-metadata-engine ---
+[INFO] --- maven-resources-plugin:3.3.0:testResources (default-testResources) @ stellarfeed-api ---
 [INFO] Copying 0 resource
 [INFO] 
-[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ roku-metadata-engine ---
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ stellarfeed-api ---
 [INFO] Changes detected - recompiling the module!
 [INFO] Compiling 4 source files to F:\java project\target\test-classes
 [INFO] 
-[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ roku-metadata-engine ---
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ stellarfeed-api ---
 [INFO] 
 [INFO] -------------------------------------------------------
 [INFO]  T E S T S
@@ -68,10 +68,10 @@ $ mvn clean install
 [INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] 
-[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ roku-metadata-engine ---
-[INFO] Building jar: F:\java project\target\roku-metadata-engine-1.0.0.jar
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ stellarfeed-api ---
+[INFO] Building jar: F:\java project\target\stellarfeed-api-1.0.0.jar
 [INFO] 
-[INFO] --- spring-boot-maven-plugin:3.2.3:repackage (repackage) @ roku-metadata-engine ---
+[INFO] --- spring-boot-maven-plugin:3.2.3:repackage (repackage) @ stellarfeed-api ---
 [INFO] Replacing main artifact with repackaged archive
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -85,13 +85,13 @@ $ mvn clean install
 - ✅ All 10 source files compiled successfully
 - ✅ All 4 test files compiled successfully
 - ✅ All 25 tests passed (0 failures)
-- ✅ JAR created: `target/roku-metadata-engine-1.0.0.jar`
+- ✅ JAR created: `target/stellarfeed-api-1.0.0.jar`
 
 ---
 
 ## 2. Application Startup (mvn spring-boot:run) {#application-startup}
 
-When you run `mvn spring-boot:run` or `java -jar target/roku-metadata-engine-1.0.0.jar`:
+When you run `mvn spring-boot:run` or `java -jar target/stellarfeed-api-1.0.0.jar`:
 
 ```
 $ mvn spring-boot:run
@@ -128,7 +128,7 @@ $ mvn spring-boot:run
 2024-03-09T21:05:01.678+00:00  INFO 23456 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
 2024-03-09T21:05:01.679+00:00  INFO 23456 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1523 ms
 2024-03-09T21:05:01.789+00:00  INFO 23456 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2024-03-09T21:05:02.012+00:00  INFO 23456 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:rokudb user=SA
+2024-03-09T21:05:02.012+00:00  INFO 23456 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:streamdb user=SA
 2024-03-09T21:05:02.014+00:00  INFO 23456 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
 2024-03-09T21:05:02.123+00:00  INFO 23456 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
 2024-03-09T21:05:02.189+00:00  INFO 23456 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.1.Final
@@ -136,7 +136,7 @@ $ mvn spring-boot:run
 2024-03-09T21:05:02.567+00:00  INFO 23456 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
 2024-03-09T21:05:02.789+00:00  INFO 23456 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
 2024-03-09T21:05:02.890+00:00  INFO 23456 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2024-03-09T21:05:02.891+00:00  INFO 23456 --- [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:rokudb'
+2024-03-09T21:05:02.891+00:00  INFO 23456 --- [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:streamdb'
 
 2024-03-09T21:05:03.234+00:00  INFO 23456 --- [           main] o.s.d.r.c.RedisConnectionFactory         : Connecting to Redis at localhost:6379
 2024-03-09T21:05:03.456+00:00  INFO 23456 --- [           main] io.lettuce.core.EpollProvider            : Starting without optional epoll library

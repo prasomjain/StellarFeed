@@ -12,11 +12,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.roku</groupId>
-    <artifactId>roku-metadata-engine</artifactId>
+    <groupId>com.stellarfeed</groupId>
+    <artifactId>stellarfeed-api</artifactId>
     <version>1.0.0</version>
-    <name>Roku Content Metadata Engine</name>
-    <description>Production-ready microservice for serving Roku-compliant content metadata</description>
+    <name>StellarFeed Metadata API</name>
+    <description>High-performance video streaming metadata delivery platform with Redis caching</description>
 
     <properties>
         <java.version>17</java.version>
