@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * REST Controller for Roku Direct Publisher Feed API.
+ * REST Controller for Video Streaming Metadata Feed API.
  * 
- * Exposes endpoints that serve Roku-compliant content metadata with
+ * Exposes endpoints that serve content metadata with
  * appropriate caching headers for CDN and device-level caching.
  */
 @RestController
-@RequestMapping("/api/v1/roku")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Slf4j
 public class RokuFeedController {
@@ -27,9 +27,9 @@ public class RokuFeedController {
     private final RokuFeedService rokuFeedService;
 
     /**
-     * Get complete Roku content feed with optional filtering.
+     * Get complete content feed with optional filtering.
      * 
-     * Endpoint: GET /api/v1/roku/feed
+     * Endpoint: GET /api/v1/feed
      * 
      * Query Parameters:
      * - genre (optional): Filter by content genre (e.g., "Action", "Drama")
@@ -76,7 +76,7 @@ public class RokuFeedController {
      */
     @GetMapping("/health")
     public ResponseEntity<String> health() {
-        return ResponseEntity.ok("{\"status\": \"UP\", \"service\": \"roku-metadata-engine\"}");
+        return ResponseEntity.ok("{\"status\": \"UP\", \"service\": \"stellarfeed-api\"}");
     }
 
     /**

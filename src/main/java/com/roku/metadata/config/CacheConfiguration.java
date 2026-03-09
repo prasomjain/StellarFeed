@@ -22,14 +22,14 @@ import java.time.Duration;
  * Redis Cache Configuration for high-performance content delivery.
  * 
  * Configures Redis as the caching layer to handle millions of concurrent
- * requests from Roku devices with minimal database load.
+ * requests from streaming devices with minimal database load.
  */
 @Configuration
 @EnableCaching
 @Slf4j
 public class CacheConfiguration {
 
-    @Value("${roku.feed.cache-ttl-seconds:3600}")
+    @Value("${streaming.feed.cache-ttl-seconds:3600}")
     private long cacheTtlSeconds;
 
     /**

@@ -40,10 +40,10 @@ class RokuFeedControllerIntegrationTest {
         when(rokuFeedService.getAllContent()).thenReturn(mockResponse);
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/roku/feed"))
+        mockMvc.perform(get("/api/v1/feed"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.providerName").value("Roku Content Hub"))
+            .andExpect(jsonPath("$.providerName").value("StellarFeed Platform"))
             .andExpect(jsonPath("$.lastUpdated").exists())
             .andExpect(jsonPath("$.movies").isArray())
             .andExpect(jsonPath("$.series").isArray())
@@ -60,7 +60,7 @@ class RokuFeedControllerIntegrationTest {
         when(rokuFeedService.getContentByFilters(eq("Action"), any())).thenReturn(mockResponse);
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/roku/feed")
+        mockMvc.perform(get("/api/v1/feed")
                 .param("genre", "Action"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.totalCount").value(1))
@@ -75,7 +75,7 @@ class RokuFeedControllerIntegrationTest {
         when(rokuFeedService.getContentByFilters(any(), eq("es"))).thenReturn(mockResponse);
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/roku/feed")
+        mockMvc.perform(get("/api/v1/feed")
                 .param("language", "es"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.totalCount").value(1));
@@ -88,7 +88,7 @@ class RokuFeedControllerIntegrationTest {
         when(rokuFeedService.getContentByFilters(eq("Drama"), eq("en"))).thenReturn(mockResponse);
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/roku/feed")
+        mockMvc.perform(get("/api/v1/feed")
                 .param("genre", "Drama")
                 .param("language", "en"))
             .andExpect(status().isOk())
@@ -98,11 +98,11 @@ class RokuFeedControllerIntegrationTest {
     @Test
     void health_ShouldReturnOk() throws Exception {
         // Act & Assert
-        mockMvc.perform(get("/api/v1/roku/health"))
+        mockMvc.perform(get("/api/v1/health"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value("UP"))
-            .andExpect(jsonPath("$.service").value("roku-metadata-engine"));
+            .andExpect(jsonPath("$.service").value("stellarfeed-api"));
     }
 
     @Test
@@ -111,7 +111,7 @@ class RokuFeedControllerIntegrationTest {
         when(rokuFeedService.getAllContent()).thenThrow(new RuntimeException("Database error"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/roku/feed"))
+        mockMvc.perform(get("/api/v1/feed"))
             .andExpect(status().isInternalServerError());
     }
 
@@ -122,7 +122,7 @@ class RokuFeedControllerIntegrationTest {
         when(rokuFeedService.getAllContent()).thenReturn(mockResponse);
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/roku/feed"))
+        mockMvc.perform(get("/api/v1/feed"))
             .andExpect(status().isOk())
             .andExpect(header().exists("X-Content-Type-Options"))
             .andExpect(header().string("X-Content-Type-Options", "nosniff"))
@@ -146,7 +146,7 @@ class RokuFeedControllerIntegrationTest {
             .build();
 
         RokuFeedResponse response = RokuFeedResponse.builder()
-            .providerName("Roku Content Hub")
+            .providerName("StellarFeed Platform")
             .language("en")
             .lastUpdated("2024-01-01T00:00:00")
             .movies(List.of(movie))
@@ -167,7 +167,7 @@ class RokuFeedControllerIntegrationTest {
             .build();
 
         RokuFeedResponse response = RokuFeedResponse.builder()
-            .providerName("Roku Content Hub")
+            .providerName("StellarFeed Platform")
             .language("en")
             .lastUpdated("2024-01-01T00:00:00")
             .movies(List.of(movie))

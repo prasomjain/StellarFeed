@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Core service for generating Roku-compliant content feeds.
+ * Core service for generating streaming-compliant content feeds.
  * 
- * Implements caching strategy for high-performance delivery to millions of Roku devices.
+ * Implements caching strategy for high-performance delivery to millions of streaming devices.
  * All public methods return cached results to minimize database load.
  */
 @Service
@@ -31,7 +31,7 @@ public class RokuFeedService {
     private final ContentMetadataRepository contentRepository;
     private final FeedValidationService validationService;
 
-    @Value("${roku.feed.provider-name}")
+    @Value("${streaming.feed.provider-name}")
     private String providerName;
 
     private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
