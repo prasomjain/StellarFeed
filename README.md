@@ -153,7 +153,7 @@ redis-cli ping
 ### 1. Clone or Download the Project
 
 ```bash
-cd "f:\java project"
+git clone https://github.com/prasomjain/StellarFeed.git
 ```
 
 ### 2. Build the Project
@@ -669,8 +669,7 @@ This project is provided as-is for demonstration and educational purposes.
 
 For questions or issues related to this project:
 
-- **GitHub Issues**: _(if hosted on GitHub)_
-- **Email**: _(your contact)_
+- **Email**: prasomwork@gmail.com
 - **Documentation**: This README and inline code comments
 
 ---
@@ -683,6 +682,4 @@ For questions or issues related to this project:
 
 ---
 
-**Built with ❤️ for Roku's OTT Ecosystem**
-
-_Last Updated: March 9, 2026_
+**Built with ❤️ for OTT Ecosystem**
