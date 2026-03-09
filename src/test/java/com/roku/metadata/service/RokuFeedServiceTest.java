@@ -221,4 +221,179 @@ class RokuFeedServiceTest {
         assertThat(contentItem.getContent().getVideos()[0].getUrl())
             .isEqualTo("https://example.com/movie1.mp4");
     }
+
+    @Test
+    void getAllContent_WithNullReleaseDate_ShouldUseDefaultDate() {
+        // Arrange: Create content with null release date
+        ContentMetadata contentWithNullDate = ContentMetadata.builder()
+            .id(10L)
+            .contentId("null-date-001")
+            .title("Content with Null Date")
+            .longDescription("Test content")
+            .streamUrl("https://example.com/test.mp4")
+            .thumbnailUrl("https://example.com/test.jpg")
+            .mediaType(MediaType.MOVIE)
+            .releaseDate(null)  // Null release date!
+            .genre("Action")
+            .language("en")
+            .durationMinutes(90)
+            .rating("PG")
+            .build();
+
+        when(contentRepository.findAll()).thenReturn(Collections.singletonList(contentWithNullDate));
+        when(validationService.validateFeedStructure(any())).thenReturn(true);
+
+        // Act
+        RokuFeedResponse response = rokuFeedService.getAllContent();
+
+        // Assert: Should not throw NPE and should use default date
+        assertThat(response).isNotNull();
+        assertThat(response.getMovies()).hasSize(1);
+        assertThat(response.getMovies().get(0).getReleaseDate()).isEqualTo("1970-01-01");
+        assertThat(response.getMovies().get(0).getContent().getDateAdded()).isEqualTo("1970-01-01T00:00:00");
+    }
+
+    @Test
+    void getAllContent_WithNullOptionalFields_ShouldUseDefaults() {
+        // Arrange: Create content with null optional fields
+        ContentMetadata sparseContent = ContentMetadata.builder()
+            .id(11L)
+            .contentId("sparse-001")
+            .title("Sparse Content")
+            .longDescription("Minimal metadata")
+            .streamUrl("https://example.com/sparse.mp4")
+            .thumbnailUrl("https://example.com/sparse.jpg")
+            .mediaType(MediaType.MOVIE)
+            .releaseDate(LocalDateTime.now())
+            .genre(null)  // Null genre
+            .language(null)  // Null language
+            .durationMinutes(null)  // Null duration
+            .rating(null)  // Null rating
+            .build();
+
+        when(contentRepository.findAll()).thenReturn(Collections.singletonList(sparseContent));
+        when(validationService.validateFeedStructure(any())).thenReturn(true);
+
+        // Act
+        RokuFeedResponse response = rokuFeedService.getAllContent();
+
+        // Assert: Should handle nulls gracefully
+        assertThat(response).isNotNull();
+        assertThat(response.getMovies()).hasSize(1);
+        var movie = response.getMovies().get(0);
+        assertThat(movie.getGenres()).isEmpty();  // Empty array for null genre
+        assertThat(movie.getContent().getLanguage()).isEqualTo("en");  // Default language
+        assertThat(movie.getContent().getDurationSeconds()).isEqualTo(0);  // Default duration
+        assertThat(movie.getRating().getRating()).isEqualTo("NR");  // Default rating
+    }
+
+    @Test
+    void getAllContent_WithNullContentList_ShouldReturnEmptyFeed() {
+        // Arrange: Repository returns null
+        when(contentRepository.findAll()).thenReturn(null);
+        when(validationService.validateFeedStructure(any())).thenReturn(true);
+
+        // Act
+        RokuFeedResponse response = rokuFeedService.getAllContent();
+
+        // Assert: Should handle null gracefully
+        assertThat(response).isNotNull();
+        assertThat(response.getMovies()).isEmpty();
+        assertThat(response.getSeries()).isEmpty();
+        assertThat(response.getShortFormVideos()).isEmpty();
+        assertThat(response.getTotalCount()).isEqualTo(0);
+    }
+
+    @Test
+    void getContentByFilters_WithEmptyResult_ShouldReturnEmptyFeed() {
+        // Arrange
+        when(contentRepository.findByGenre("NonExistent")).thenReturn(Collections.emptyList());
+        when(validationService.validateFeedStructure(any())).thenReturn(true);
+
+        // Act
+        RokuFeedResponse response = rokuFeedService.getContentByFilters("NonExistent", null);
+
+        // Assert
+        assertThat(response).isNotNull();
+        assertThat(response.getTotalCount()).isEqualTo(0);
+    }
+
+    @Test
+    void getAllContent_WithValidationFailure_ShouldStillReturnResponse() {
+        // Arrange
+        when(contentRepository.findAll()).thenReturn(testContent);
+        when(validationService.validateFeedStructure(any())).thenReturn(false);
+
+        // Act: Validation fails but should not throw exception
+        RokuFeedResponse response = rokuFeedService.getAllContent();
+
+        // Assert: Response should still be returned
+        assertThat(response).isNotNull();
+        assertThat(response.getTotalCount()).isEqualTo(3);
+    }
+
+    @Test
+    void getAllContent_WithLongDescription_ShouldTruncateShortDescription() {
+        // Arrange: Create content with very long description
+        String longDescription = "A".repeat(300);  // 300 characters
+        ContentMetadata longDescContent = ContentMetadata.builder()
+            .id(12L)
+            .contentId("long-desc-001")
+            .title("Long Description Content")
+            .longDescription(longDescription)
+            .streamUrl("https://example.com/long.mp4")
+            .thumbnailUrl("https://example.com/long.jpg")
+            .mediaType(MediaType.MOVIE)
+            .releaseDate(LocalDateTime.now())
+            .genre("Drama")
+            .language("en")
+            .durationMinutes(100)
+            .rating("PG")
+            .build();
+
+        when(contentRepository.findAll()).thenReturn(Collections.singletonList(longDescContent));
+        when(validationService.validateFeedStructure(any())).thenReturn(true);
+
+        // Act
+        RokuFeedResponse response = rokuFeedService.getAllContent();
+
+        // Assert: Short description should be truncated with ellipsis
+        assertThat(response.getMovies()).hasSize(1);
+        String shortDesc = response.getMovies().get(0).getShortDescription();
+        assertThat(shortDesc.length()).isLessThanOrEqualTo(200);
+        assertThat(shortDesc).endsWith("...");
+    }
+
+    @Test
+    void getAllContent_WithEmptyStringOptionalFields_ShouldHandleGracefully() {
+        // Arrange: Create content with empty strings instead of nulls
+        ContentMetadata emptyFieldContent = ContentMetadata.builder()
+            .id(13L)
+            .contentId("empty-001")
+            .title("Empty Fields Content")
+            .longDescription("Test")
+            .streamUrl("https://example.com/empty.mp4")
+            .thumbnailUrl("https://example.com/empty.jpg")
+            .mediaType(MediaType.MOVIE)
+            .releaseDate(LocalDateTime.now())
+            .genre("")  // Empty string
+            .language("")  // Empty string
+            .durationMinutes(100)
+            .rating("")  // Empty string
+            .build();
+
+        when(contentRepository.findAll()).thenReturn(Collections.singletonList(emptyFieldContent));
+        when(validationService.validateFeedStructure(any())).thenReturn(true);
+
+        // Act
+        RokuFeedResponse response = rokuFeedService.getAllContent();
+
+        // Assert: Should handle empty strings
+        assertThat(response).isNotNull();
+        assertThat(response.getMovies()).hasSize(1);
+        var movie = response.getMovies().get(0);
+        assertThat(movie.getGenres()).isEmpty();  // Empty genre becomes empty array
+        assertThat(movie.getRating().getRating()).isEqualTo("NR");  // Empty rating becomes "NR"
+    }
 }
+

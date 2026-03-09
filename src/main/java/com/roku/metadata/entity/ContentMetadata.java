@@ -4,6 +4,8 @@ import com.roku.metadata.model.MediaType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,41 +39,50 @@ public class ContentMetadata {
     /**
      * Unique identifier for the content item (Roku requirement).
      */
-    @NotBlank
+    @NotBlank(message = "Content ID is required")
+    @Size(min = 1, max = 100, message = "Content ID must be between 1 and 100 characters")
     @Column(name = "content_id", nullable = false, unique = true, length = 100)
     private String contentId;
 
     /**
      * Display title of the content.
      */
-    @NotBlank
+    @NotBlank(message = "Title is required")
+    @Size(min = 1, max = 255, message = "Title must be between 1 and 255 characters")
     @Column(nullable = false, length = 255)
     private String title;
 
     /**
      * Detailed description of the content (Roku requires 'longDescription').
      */
-    @NotBlank
+    @NotBlank(message = "Description is required")
+    @Size(min = 1, max = 2000, message = "Description must be between 1 and 2000 characters")
     @Column(name = "long_description", nullable = false, length = 2000)
     private String longDescription;
 
     /**
      * URL to the streaming video file.
      */
-    @NotBlank
+    @NotBlank(message = "Stream URL is required")
+    @Size(min = 1, max = 500, message = "Stream URL must be between 1 and 500 characters")
+    @Pattern(regexp = "^https?://.*", message = "Stream URL must be a valid HTTP or HTTPS URL")
     @Column(name = "stream_url", nullable = false, length = 500)
     private String streamUrl;
 
     /**
      * URL to the HD thumbnail image (recommended: 1920x1080).
      */
-    @NotBlank
+    @NotBlank(message = "Thumbnail URL is required")
+    @Size(min = 1, max = 500, message = "Thumbnail URL must be between 1 and 500 characters")
+    @Pattern(regexp = "^https?://.*", message = "Thumbnail URL must be a valid HTTP or HTTPS URL")
     @Column(name = "thumbnail_url", nullable = false, length = 500)
     private String thumbnailUrl;
 
     /**
      * URL to the SD thumbnail image (recommended: 800x450).
      */
+    @Size(max = 500, message = "SD Thumbnail URL must not exceed 500 characters")
+    @Pattern(regexp = "^(https?://.*)?$", message = "SD Thumbnail URL must be empty or a valid HTTP/HTTPS URL")
     @Column(name = "sd_thumbnail_url", length = 500)
     private String sdThumbnailUrl;
 
@@ -93,12 +104,14 @@ public class ContentMetadata {
     /**
      * Content genre for filtering (e.g., Action, Drama, Comedy).
      */
+    @Size(max = 50, message = "Genre must not exceed 50 characters")
     @Column(length = 50)
     private String genre;
 
     /**
      * Language code for multi-region support (e.g., en, es).
      */
+    @Size(max = 10, message = "Language code must not exceed 10 characters")
     @Column(length = 10)
     private String language;
 
@@ -111,6 +124,7 @@ public class ContentMetadata {
     /**
      * Content rating (e.g., PG, PG-13, R).
      */
+    @Size(max = 10, message = "Rating must not exceed 10 characters")
     @Column(length = 10)
     private String rating;
 }

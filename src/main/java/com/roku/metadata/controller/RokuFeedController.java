@@ -45,13 +45,23 @@ public class RokuFeedController {
         log.info("Received feed request - genre: {}, language: {}", genre, language);
 
         try {
+            // Validate and sanitize input parameters
+            String sanitizedGenre = sanitizeParameter(genre, 50, "genre");
+            String sanitizedLanguage = sanitizeParameter(language, 10, "language");
+            
             RokuFeedResponse feedResponse;
             
             // Apply filters if provided
-            if (genre != null || language != null) {
-                feedResponse = rokuFeedService.getContentByFilters(genre, language);
+            if (sanitizedGenre != null || sanitizedLanguage != null) {
+                feedResponse = rokuFeedService.getContentByFilters(sanitizedGenre, sanitizedLanguage);
             } else {
                 feedResponse = rokuFeedService.getAllContent();
+            }
+
+            // Validate response is not null
+            if (feedResponse == null) {
+                log.error("Service returned null feed response");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
 
             // Set cache control headers for CDN and client caching
@@ -65,10 +75,44 @@ public class RokuFeedController {
                 .header("X-Frame-Options", "DENY")
                 .body(feedResponse);
 
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid request parameters: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            log.error("Error generating Roku feed", e);
+            log.error("Error generating feed - genre: {}, language: {}", genre, language, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Sanitize and validate input parameters to prevent injection attacks.
+     */
+    private String sanitizeParameter(String param, int maxLength, String paramName) {
+        if (param == null) {
+            return null;
+        }
+        
+        // Trim whitespace
+        String sanitized = param.trim();
+        
+        // Return null if empty after trimming
+        if (sanitized.isEmpty()) {
+            return null;
+        }
+        
+        // Check max length
+        if (sanitized.length() > maxLength) {
+            log.warn("Parameter {} exceeds max length of {}: {}", paramName, maxLength, sanitized.length());
+            throw new IllegalArgumentException(paramName + " exceeds maximum length of " + maxLength);
+        }
+        
+        // Validate alphanumeric with hyphens and underscores only
+        if (!sanitized.matches("^[a-zA-Z0-9\\-_]+$")) {
+            log.warn("Parameter {} contains invalid characters: {}", paramName, sanitized);
+            throw new IllegalArgumentException(paramName + " contains invalid characters");
+        }
+        
+        return sanitized;
     }
 
     /**
@@ -102,5 +146,5 @@ public class RokuFeedController {
     /**
      * Error response DTO.
      */
-    public record ErrorResponse(String code, String message) {}
+    public static record ErrorResponse(String code, String message) {}
 }

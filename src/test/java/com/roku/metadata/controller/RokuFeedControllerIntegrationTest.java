@@ -130,6 +130,79 @@ class RokuFeedControllerIntegrationTest {
             .andExpect(header().string("X-Frame-Options", "DENY"));
     }
 
+    @Test
+    void getFeed_WithInvalidGenreCharacters_ShouldReturn400() throws Exception {
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/feed")
+                .param("genre", "<script>alert('xss')</script>"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getFeed_WithTooLongGenre_ShouldReturn400() throws Exception {
+        // Arrange: Create string longer than 50 characters
+        String tooLongGenre = "A".repeat(51);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/feed")
+                .param("genre", tooLongGenre))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getFeed_WithTooLongLanguage_ShouldReturn400() throws Exception {
+        // Arrange: Create string longer than 10 characters
+        String tooLongLanguage = "A".repeat(11);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/feed")
+                .param("language", tooLongLanguage))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getFeed_WithSpecialCharactersInGenre_ShouldReturn400() throws Exception {
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/feed")
+                .param("genre", "Action@#$%"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getFeed_WithValidHyphenatedGenre_ShouldSucceed() throws Exception {
+        // Arrange
+        RokuFeedResponse mockResponse = createFilteredFeedResponse();
+        when(rokuFeedService.getContentByFilters(eq("Sci-Fi"), any())).thenReturn(mockResponse);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/feed")
+                .param("genre", "Sci-Fi"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void getFeed_WithEmptyGenreParameter_ShouldTreatAsNull() throws Exception {
+        // Arrange
+        RokuFeedResponse mockResponse = createMockFeedResponse();
+        when(rokuFeedService.getAllContent()).thenReturn(mockResponse);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/feed")
+                .param("genre", "   "))  // Whitespace only
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void getFeed_WithNullResponse_ShouldReturn500() throws Exception {
+        // Arrange
+        when(rokuFeedService.getAllContent()).thenReturn(null);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/feed"))
+            .andExpect(status().isInternalServerError());
+    }
+
+
     private RokuFeedResponse createMockFeedResponse() {
         ContentItemDto movie = ContentItemDto.builder()
             .contentId("movie-001")
